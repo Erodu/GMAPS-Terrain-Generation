@@ -15,6 +15,7 @@ Shader "Terrain/TerrainVertexShader"
         Pass
         {
             CGPROGRAM
+
             #pragma vertex vert
             #pragma fragment frag
 
@@ -34,6 +35,7 @@ Shader "Terrain/TerrainVertexShader"
                 float2 uv : TEXCOORD0;
                 UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
+                float4 col : COLOR;
             };
 
             sampler2D _MainTex;
@@ -42,6 +44,7 @@ Shader "Terrain/TerrainVertexShader"
             int _Seed;
             float _Scale;
             float _Strength;
+            float2 _Offset;
 
             float hash(float2 p)
             {
@@ -74,8 +77,11 @@ Shader "Terrain/TerrainVertexShader"
             {
                 v2f o;
 
-                float2 pos = float2(v.vertex.x, v.vertex.z) / _Scale;
-                v.vertex.y = noise(pos) / _Strength;
+                float2 pos = float2(v.vertex.x, v.vertex.z) + _Offset;
+                pos /= _Scale;
+                v.vertex.y = (noise(pos) * 0.5  + 0.5) / _Strength;
+                o.col = float4(v.vertex.y/10, v.vertex.y/15, v.vertex.y/30, 0);
+
 
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
@@ -87,9 +93,10 @@ Shader "Terrain/TerrainVertexShader"
             {
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
+
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
-                return col;
+                return col * i.col;
             }
             ENDCG
         }

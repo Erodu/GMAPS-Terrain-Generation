@@ -16,6 +16,7 @@ public class MeshManipulator : MonoBehaviour
 
     public MeshFilter meshFilter;
     public MeshRenderer meshRenderer;
+    public MeshCollider meshCollider;
 
     public MeshData GenerateTerrainMesh(int resolution, int levelOfDetail)
     {
@@ -70,7 +71,7 @@ public class MeshManipulator : MonoBehaviour
     void OnValidate()
     {
         MeshData md = GenerateTerrainMesh(Resolution, LOD);
-        DrawMesh(md);
+        //DrawMesh(md);
     }
 }
 
