@@ -9,21 +9,20 @@ using System;
 public class EndlessTerrain : MonoBehaviour
 {
     public const float maxViewDistance = 300;
-    public MeshManipulator meshManipulator;
     public Transform player;
     public Transform meshGroup;
-    public Material material;
-    public Shader shader;
     public static Vector2 playerPosition;
     int chunkSize;
     int chunksVisibleInViewDistance;
+
+    public MapGenerator mapGen;
 
     Dictionary<Vector2, TerrainChunk> terrainChunkDictionary = new();
     List<TerrainChunk> terrainChunksVisibleLastUpdate = new();
 
     private void Start()
     {
-        chunkSize = meshManipulator.Resolution - 1;
+        chunkSize = mapGen.nd.resolution - 1;
         chunksVisibleInViewDistance = Mathf.RoundToInt(maxViewDistance / chunkSize);
         
     }
@@ -73,7 +72,7 @@ public class EndlessTerrain : MonoBehaviour
                 else
                 {
                     //create a new instance of the chunk
-                    terrainChunkDictionary.Add(viewedChunkCoord, new TerrainChunk(viewedChunkCoord,chunkSize,meshGroup));
+                    terrainChunkDictionary.Add(viewedChunkCoord, new TerrainChunk(viewedChunkCoord,chunkSize,meshGroup,mapGen));
                     
                 }
                     
@@ -87,8 +86,8 @@ public class EndlessTerrain : MonoBehaviour
         GameObject meshObject;
         Vector2 position;
         Bounds bounds;
-        NoiseData nd;
-        public TerrainChunk(Vector2 coord, int size,Transform parent)
+
+        public TerrainChunk(Vector2 coord, int size,Transform parent,MapGenerator mapG)
         {
             position = coord * size;
             bounds = new(position, Vector2.one * size);
@@ -97,8 +96,13 @@ public class EndlessTerrain : MonoBehaviour
             //creating a new plane and positioning it in the right spot
             meshObject = GameObject.CreatePrimitive(PrimitiveType.Plane);
             meshObject.transform.position = positionV3;
-            meshObject.transform.localScale = Vector3.one * size / 10f;
+            //meshObject.transform.localScale = Vector3.one * size / 10f;
             meshObject.transform.parent = parent;
+
+            float[,] heightMap = Noise.Perlin.GenerateNoise(mapG.nd,position);
+            MeshFilter mf = meshObject.GetComponent<MeshFilter>();
+            MeshData meshData = MeshManipulator.GenerateTerrainMesh(heightMap, mapG.heightMultiplier, mapG.aniCurve, mapG.LOD);
+            mf.sharedMesh = meshData.CreateMesh();
 
             /* for shaders (currently not really working) 
             Renderer rend = meshObject.GetComponent<Renderer>();

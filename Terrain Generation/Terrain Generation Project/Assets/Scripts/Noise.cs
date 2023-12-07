@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,13 +7,15 @@ public static class Noise
 {
     public static class Perlin
     {
-        public static float[,] GenerateNoise(NoiseData nd)
+        public static float[,] GenerateNoise(NoiseData nd,Vector2 offset)
         {
             float[,] noiseMap = new float[nd.resolution,nd.resolution];
             int resolution = nd.resolution;
             float noiseScale = nd.noiseScale;
 
             System.Random prng = new(nd.seed);
+            float offsetX = prng.Next(-100000, 100000) + offset.x;
+            float offsetY = prng.Next(-100000, 100000) + offset.y;
 
             float maxNoiseHeight = float.MinValue;
             float minNoiseHeight = float.MaxValue;
@@ -26,10 +29,10 @@ public static class Noise
                 {
                     float noiseHeight = 0;
 
-                    float sampleX = (x - halfWidth) / noiseScale;
-                    float sampleY = (y - halfHeight) / noiseScale;
+                    float sampleX = (x - halfWidth) / noiseScale + offset.x;
+                    float sampleY = (y - halfHeight) / noiseScale + offset.y;
 
-                    float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
+                    float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 -1;
                     noiseHeight += perlinValue;
 
                     if (noiseHeight > maxNoiseHeight)
@@ -50,6 +53,7 @@ public static class Noise
     }
 }
 
+[Serializable]
 public struct NoiseData
 {
     public int seed;
