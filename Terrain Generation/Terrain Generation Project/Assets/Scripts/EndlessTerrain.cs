@@ -12,16 +12,19 @@ public class EndlessTerrain : MonoBehaviour
     public Transform player;
     public Transform meshGroup;
     public static Vector2 playerPosition;
+    
     int chunkSize;
     int chunksVisibleInViewDistance;
 
     public MapGenerator mapGen;
-
+    public Material material;
+    public static Material mat;
     Dictionary<Vector2, TerrainChunk> terrainChunkDictionary = new();
     List<TerrainChunk> terrainChunksVisibleLastUpdate = new();
 
     private void Start()
     {
+        mat = material;
         chunkSize = mapGen.nd.resolution - 1;
         chunksVisibleInViewDistance = Mathf.RoundToInt(maxViewDistance / chunkSize);
         
@@ -103,12 +106,10 @@ public class EndlessTerrain : MonoBehaviour
             MeshFilter mf = meshObject.GetComponent<MeshFilter>();
             MeshData meshData = MeshManipulator.GenerateTerrainMesh(heightMap, mapG.heightMultiplier, mapG.aniCurve, mapG.LOD);
             mf.sharedMesh = meshData.CreateMesh();
+            meshObject.GetComponent<MeshCollider>().sharedMesh = mf.sharedMesh;
 
-            /* for shaders (currently not really working) 
             Renderer rend = meshObject.GetComponent<Renderer>();
             rend.material = mat;
-            rend.material.SetVector("_Offset",new(position.x,position.y));
-            */
 
             SetVisible(false);
         }
