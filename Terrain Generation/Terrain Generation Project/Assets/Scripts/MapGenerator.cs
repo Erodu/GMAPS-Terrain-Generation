@@ -14,15 +14,21 @@ public class MapGenerator : MonoBehaviour
 
     public void GenerateMap()
     {
-        //float[,] heightMap = Noise.Perlin.GenerateNoise(nd);
-        //Color[] colorMap = new Color[nd.resolution * nd.resolution];
+        float[,] heightMap = Noise.Perlin.GenerateNoise(nd,new Vector2(0,0));
+        Color[] colorMap = new Color[nd.resolution * nd.resolution];
 
-        //DrawMesh(MeshManipulator.GenerateTerrainMesh(heightMap, heightMultiplier, aniCurve, LOD));
+        DrawMesh(MeshManipulator.GenerateTerrainMesh(heightMap, heightMultiplier, aniCurve, LOD));
     }
 
     public void DrawMesh(MeshData meshData)
     {
         mf.sharedMesh = meshData.CreateMesh();
+    }
+
+    private void OnValidate()
+    {
+        if(mf.gameObject.activeSelf)
+            GenerateMap();
     }
 }
 

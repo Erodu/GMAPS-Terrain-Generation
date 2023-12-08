@@ -80,13 +80,16 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
-    - _WaterH: 3.3
+    - _WaterH: 1
     - _WaveL: 1
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Colour: {r: 0.18232825, g: 0.20754719, b: 0.0499288, a: 0}
+    - _Colour: {r: 0.090667285, g: 0.103773594, b: 0.028880388, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _TerrainColour: {r: 0.21176468, g: 0.5647059, b: 0.28422767, a: 0}
+    - _TerrainColour1: {r: 0.014017441, g: 0.03334068, b: 0.14150941, a: 0}
+    - _TerrainColour2: {r: 0.4716981, g: 0.23807405, b: 0.23807405, a: 0}
     - _WaterColour: {r: 0.27450982, g: 0.8745098, b: 0.8980392, a: 0}
     - _WaveDir: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []

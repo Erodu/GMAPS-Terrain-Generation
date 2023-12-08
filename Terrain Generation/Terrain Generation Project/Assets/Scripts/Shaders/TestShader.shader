@@ -3,7 +3,9 @@ Shader "Terrain/TestShader"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _Colour("Colour",COLOR) = (1,1,1,0)
+        _TerrainColour("Terrain Colour",COLOR) = (1,1,1,0)
+        _TerrainColour1("Terrain Colour1",COLOR) = (1,1,1,0)
+        _TerrainColour2("Terrain Colour2",COLOR) = (1,1,1,0)
 
         _WaterColour("Water Colour", Color) = (0,0,0,0)
         _NumWaves("Number Of Waves",Integer) = 0
@@ -40,17 +42,20 @@ Shader "Terrain/TestShader"
                 float2 uv : TEXCOORD0;
                 UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
-                float4 color : COLOR;
+                float4 colour : COLOR;
             };
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            float4 _Colour;
+            float4 _TerrainColour;
+            float4 _TerrainColour1;
+            float4 _TerrainColour2;
+
             v2f vert (appdata v)
             {
                 v2f o;
-
-                o.color = float4(v.vertex.y * 0.5,v.vertex.y * 0.5,v.vertex.y,0);
+                float height = v.vertex.y;
+                o.colour = lerp(_TerrainColour1, _TerrainColour2, height/2.5);
 
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
@@ -62,9 +67,10 @@ Shader "Terrain/TestShader"
             {
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
+
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
-                return _Colour * i.color;
+                return _TerrainColour * i.colour;
             }
             ENDCG
         }
