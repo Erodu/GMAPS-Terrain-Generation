@@ -16,11 +16,19 @@ public static class Noise
 
             Vector2[] octaveOffsets = new Vector2[nd.octaves];
 
+            float maxPossibleHeight = 0;
+            float amplitude = 1;
+            float frequency = 1;
+
             for (int i = 0; i < nd.octaves; i++)
             {
-                float offsetX = prng.Next(-100000, 100000) + nd.offset.x;
-                float offsetY = prng.Next(-100000, 100000) + nd.offset.y;
+                float offsetX = prng.Next(-100000, 100000) + nd.offset.x + offset.x;
+                float offsetY = prng.Next(-100000, 100000) - nd.offset.y - offset.y;
                 octaveOffsets[i] = new(offsetX, offsetY);
+
+                maxPossibleHeight += amplitude;
+                amplitude *= nd.persistance;
+
             }
 
             if (nd.noiseScale <= 0)
@@ -38,16 +46,14 @@ public static class Noise
             {
                 for (int x = 0; x < resolution; x++)
                 {
-
-                    float amplitude = 1;
-                    float frequency = 1;
+                    amplitude = 1;
+                    frequency = 1;
                     float noiseHeight = 0;
-
 
                     for (int i = 0; i < nd.octaves; i++)
                     {
-                        float sampleX = (x - halfWidth) / nd.noiseScale * frequency + octaveOffsets[i].x;
-                        float sampleY = (y - halfHeight) / nd.noiseScale * frequency + octaveOffsets[i].y;
+                        float sampleX = (x - halfWidth + octaveOffsets[i].x) / nd.noiseScale * frequency;
+                        float sampleY = (y - halfHeight + octaveOffsets[i].y) / nd.noiseScale * frequency;
 
                         float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
                         noiseHeight += perlinValue * amplitude;
@@ -73,7 +79,9 @@ public static class Noise
             {
                 for (int x = 0; x < resolution; x++)
                 {
-                    noiseMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, noiseMap[x, y]);
+                    //noiseMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, noiseMap[x, y]);
+                    float normalizedHeight = (noiseMap[x, y] + 1) / (2f * maxPossibleHeight);
+                    noiseMap[x, y] = normalizedHeight;
                 }
             }
 

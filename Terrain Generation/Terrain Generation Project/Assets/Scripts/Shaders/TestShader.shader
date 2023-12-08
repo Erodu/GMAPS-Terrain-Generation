@@ -41,7 +41,7 @@ Shader "Terrain/TestShader"
             {
                 v2f o;
 
-                o.color = float4(v.vertex.y,v.vertex.y,v.vertex.y,0);
+                o.color = float4(v.vertex.y * 0.5,v.vertex.y * 0.5,v.vertex.y,0);
 
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
