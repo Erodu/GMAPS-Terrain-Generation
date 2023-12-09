@@ -20,15 +20,19 @@ public class EndlessTerrain : MonoBehaviour
     public MapGenerator mapGen;
     public Material material;
     public static Material mat;
+
+    //keeps all the record of all the chunks that has been generated
     Dictionary<Vector2, TerrainChunk> terrainChunkDictionary = new();
+    //keep the list of all the chunk that was visible
     List<TerrainChunk> terrainChunksVisibleLastUpdate = new();
 
     private void Start()
     {
         mat = material;
-        chunkSize = mapGen.nd.resolution - 1;
-        chunksVisibleInViewDistance = Mathf.RoundToInt(maxViewDistance / chunkSize);
-        
+
+        //get the chunk's information
+        chunkSize = mapGen.NoiseData.resolution - 1;
+        chunksVisibleInViewDistance = Mathf.RoundToInt(maxViewDistance / chunkSize);     
     }
 
     private void Update()
@@ -75,7 +79,7 @@ public class EndlessTerrain : MonoBehaviour
                 }
                 else
                 {
-                    //create a new instance of the chunk
+                    //create a new instance of the chunk and add it into the dictionary
                     terrainChunkDictionary.Add(viewedChunkCoord, new TerrainChunk(viewedChunkCoord,chunkSize,meshGroup,mapGen));
                     
                 }
@@ -104,12 +108,17 @@ public class EndlessTerrain : MonoBehaviour
             meshObject.transform.parent = parent;
 
             //generate the mesh for this chunk
-            float[,] heightMap = Noise.Perlin.GenerateNoise(mapG.nd,position);
+            float[,] heightMap = Noise.Perlin.GenerateNoise(mapG.NoiseData,position); // generate height map for the terrain
+
             MeshFilter mf = meshObject.GetComponent<MeshFilter>();
+            //use the height map to adjust the vertices of the mesh to match the height map's value
             MeshData meshData = MeshManipulator.GenerateTerrainMesh(heightMap, mapG.heightMultiplier, mapG.aniCurve, mapG.LOD);
+            //create the mesh and apply it to the object
             mf.sharedMesh = meshData.CreateMesh();
+            //update the collider
             meshObject.GetComponent<MeshCollider>().sharedMesh = mf.sharedMesh;
 
+            //apply the material to the mesh
             Renderer rend = meshObject.GetComponent<Renderer>();
             rend.material = mat;
 

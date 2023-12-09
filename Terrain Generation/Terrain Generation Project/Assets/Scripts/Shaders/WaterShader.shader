@@ -30,14 +30,15 @@ Shader "Unlit/WaterShader"
             #include "UnityCG.cginc"
 
             
-            
+            //struct to contain the vertex data in vertex shader
             struct appdata
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
                 float3 normal : NORMAL;
             };
-
+            
+            //struct to contain vertex data in the fragment shader
             struct v2f
             {
                 float2 uv : TEXCOORD0;
@@ -57,6 +58,7 @@ Shader "Unlit/WaterShader"
             float _Spd;
             float2 _WaveDir;
 
+            //a function that return a pseudo-random number by doing a bunch of math functions on it
             float2 hash(float2 pos) 
             {
                 const float2 k = float2(0.3183099, 0.3678794);
@@ -67,6 +69,7 @@ Shader "Unlit/WaterShader"
                 return frac(h * 2.0 - 1.0);
             }
 
+            //function that
             float WaveState(float2 pos,float2 dir,float spd,float amp)
             {
                 float height = (_Amp * amp) * sin(dot(dir,pos) * (_WaveL/2) + _Time * (_Spd * spd * 2/_WaveL));

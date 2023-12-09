@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MapGenerator : MonoBehaviour
 {
-    public NoiseData nd;
+    public NoiseData NoiseData;
     public int LOD;
     public float heightMultiplier;
     public AnimationCurve aniCurve;
@@ -14,8 +14,8 @@ public class MapGenerator : MonoBehaviour
 
     public void GenerateMap()
     {
-        float[,] heightMap = Noise.Perlin.GenerateNoise(nd,new Vector2(0,0));
-        Color[] colorMap = new Color[nd.resolution * nd.resolution];
+        float[,] heightMap = Noise.Perlin.GenerateNoise(NoiseData,new Vector2(0,0));
+        Color[] colorMap = new Color[NoiseData.resolution * NoiseData.resolution];
 
         DrawMesh(MeshManipulator.GenerateTerrainMesh(heightMap, heightMultiplier, aniCurve, LOD));
     }

@@ -7,6 +7,7 @@ public static class Noise
 {
     public static class Perlin
     {
+        //using perlin noise to generate a 2d heightmap
         public static float[,] GenerateNoise(NoiseData nd,Vector2 offset)
         {
             float[,] noiseMap = new float[nd.resolution,nd.resolution];

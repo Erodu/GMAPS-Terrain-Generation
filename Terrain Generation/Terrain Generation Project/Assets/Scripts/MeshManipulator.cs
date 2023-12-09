@@ -71,8 +71,10 @@ public static class MeshManipulator
         {
             for (int x = 0; x < width; x += meshSimplificationIncrement)
             {
-
+                //goes through the vertices array in the mesh data and updates the new
+                //vertices
                 meshData.vertices[vertexIndex] = new Vector3(topLeftX + x, 0, topLeftZ - y);
+                //updates the uvs as well
                 meshData.uvs[vertexIndex] = new Vector2(x / (float)width, y / (float)height);
 
                 //check if on edge?
