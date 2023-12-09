@@ -8,18 +8,19 @@ Shader "Terrain/TestShader"
         _TerrainColour2("Terrain Colour2",COLOR) = (1,1,1,0)
 
         _WaterColour("Water Colour", Color) = (0,0,0,0)
+        _WaterColour1("Water Colour1", Color) = (0,0,0,0)
+        _WaterColour2("Water Colour2", Color) = (0,0,0,0)
         _NumWaves("Number Of Waves",Integer) = 0
         _WaterH("Water Height",float) = 0
         _Scale("Scale",float) = 0
         _Amp("Amplitude",float) = 0
         _WaveL("Wave Length",float) = 0
         _Spd("Wave Speed",float) = 0
-        _WaveDir("Wave Direction",Vector) = (0,0,0,0)
     }
     SubShader
     {
         Tags { "RenderType"="Opaque" }
-        LOD 100
+        LOD 300
 
         Pass
         {
@@ -35,6 +36,7 @@ Shader "Terrain/TestShader"
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+                float3 normal : NORMAL;
             };
 
             struct v2f
@@ -43,6 +45,7 @@ Shader "Terrain/TestShader"
                 UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
                 float4 colour : COLOR;
+                float3 normal: TEXCOORD1;
             };
 
             sampler2D _MainTex;
@@ -55,10 +58,12 @@ Shader "Terrain/TestShader"
             {
                 v2f o;
                 float height = v.vertex.y;
-                o.colour = lerp(_TerrainColour1, _TerrainColour2, height/2.5);
+                o.colour = saturate(lerp(_TerrainColour1, _TerrainColour2, height)) *0.5 + 0.5;
 
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.normal = UnityObjectToWorldNormal(v.normal);
+
                 UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
             }
@@ -68,9 +73,13 @@ Shader "Terrain/TestShader"
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
 
+                //lambert diffuse
+                float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
+                float diff = max(0.0, dot(i.normal, lightDir));
+
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
-                return _TerrainColour * i.colour;
+                return i.colour * _TerrainColour * diff;
             }
             ENDCG
         }
@@ -105,12 +114,14 @@ Shader "Terrain/TestShader"
 
             int _NumWaves;
             float4 _WaterColour;
+            float4 _WaterColour1;
+            float4 _WaterColour2;
+
             float _WaterH;
             float _Scale;
             float _Amp;
             float _WaveL;
             float _Spd;
-            float2 _WaveDir;
 
             float2 hash(float2 pos)
             {
@@ -155,7 +166,10 @@ Shader "Terrain/TestShader"
 
                 v.vertex.y = SoS(float2(v.vertex.x,v.vertex.z) * _Scale) + _WaterH;
                 float height = (v.vertex.y / _NumWaves * 2.5) - (_WaterH/3);
-                o.colour = float4(height, height, height, 0) * 0.75 + 0.5;
+
+                //o.colour = float4(height, height, height, 0) * 0.75 + 0.5;
+
+                o.colour = lerp(_WaterColour1, _WaterColour2, height * 1.75 + 0.15);
 
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);

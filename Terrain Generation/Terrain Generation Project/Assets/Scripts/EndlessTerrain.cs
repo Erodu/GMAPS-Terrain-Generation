@@ -103,6 +103,7 @@ public class EndlessTerrain : MonoBehaviour
             //meshObject.transform.localScale = Vector3.one * size / 10f;
             meshObject.transform.parent = parent;
 
+            //generate the mesh for this chunk
             float[,] heightMap = Noise.Perlin.GenerateNoise(mapG.nd,position);
             MeshFilter mf = meshObject.GetComponent<MeshFilter>();
             MeshData meshData = MeshManipulator.GenerateTerrainMesh(heightMap, mapG.heightMultiplier, mapG.aniCurve, mapG.LOD);

@@ -13,7 +13,6 @@ public static class Noise
             int resolution = nd.resolution;
 
             System.Random prng = new(nd.seed);
-
             Vector2[] octaveOffsets = new Vector2[nd.octaves];
 
             float maxPossibleHeight = 0;
@@ -79,7 +78,6 @@ public static class Noise
             {
                 for (int x = 0; x < resolution; x++)
                 {
-                    //noiseMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, noiseMap[x, y]);
                     float normalizedHeight = (noiseMap[x, y] + 1) / (2f * maxPossibleHeight);
                     noiseMap[x, y] = normalizedHeight;
                 }
