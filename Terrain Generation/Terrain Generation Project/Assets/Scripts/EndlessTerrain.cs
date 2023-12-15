@@ -9,11 +9,12 @@ using System;
 
 public class EndlessTerrain : MonoBehaviour
 {
-    public const float maxViewDistance = 300;
+    // Using struct LODInfo
+    public LODInfo[] levelsOfDetail;
+    public static float maxViewDistance;
     public Transform player;
     public Transform meshGroup;
     public static Vector2 playerPosition;
-    
     int chunkSize;
     int chunksVisibleInViewDistance;
 
@@ -29,10 +30,11 @@ public class EndlessTerrain : MonoBehaviour
     private void Start()
     {
         mat = material;
-
+        // Set the maximum view distance to the last element in levelsOfDetail's viewDistance.
+        maxViewDistance = levelsOfDetail[levelsOfDetail.Length - 1].viewDistance;
         //get the chunk's information
         chunkSize = mapGen.NoiseData.resolution - 1;
-        chunksVisibleInViewDistance = Mathf.RoundToInt(maxViewDistance / chunkSize);     
+        chunksVisibleInViewDistance = Mathf.RoundToInt(maxViewDistance / chunkSize);
     }
 
     private void Update()
@@ -58,7 +60,7 @@ public class EndlessTerrain : MonoBehaviour
         int currentChunkCoordY = Mathf.RoundToInt(playerPosition.y / chunkSize);
 
         //get the surrounding chunk
-        for(int yOffset = -chunksVisibleInViewDistance; yOffset <= chunksVisibleInViewDistance; yOffset++)
+        for (int yOffset = -chunksVisibleInViewDistance; yOffset <= chunksVisibleInViewDistance; yOffset++)
         {
             for (int xOffset = -chunksVisibleInViewDistance; xOffset <= chunksVisibleInViewDistance; xOffset++)
             {
@@ -80,22 +82,20 @@ public class EndlessTerrain : MonoBehaviour
                 else
                 {
                     //create a new instance of the chunk and add it into the dictionary
-                    terrainChunkDictionary.Add(viewedChunkCoord, new TerrainChunk(viewedChunkCoord,chunkSize,meshGroup,mapGen));
-                    
+                    terrainChunkDictionary.Add(viewedChunkCoord, new TerrainChunk(viewedChunkCoord, chunkSize, meshGroup, mapGen));
                 }
-                    
             }
         }
     }
 
 
-    public class TerrainChunk 
+    public class TerrainChunk
     {
         GameObject meshObject;
         Vector2 position;
         Bounds bounds;
 
-        public TerrainChunk(Vector2 coord, int size,Transform parent,MapGenerator mapG)
+        public TerrainChunk(Vector2 coord, int size, Transform parent, MapGenerator mapG)
         {
             position = coord * size;
             bounds = new(position, Vector2.one * size);
@@ -108,7 +108,7 @@ public class EndlessTerrain : MonoBehaviour
             meshObject.transform.parent = parent;
 
             //generate the mesh for this chunk
-            float[,] heightMap = Noise.Perlin.GenerateNoise(mapG.NoiseData,position); // generate height map for the terrain
+            float[,] heightMap = Noise.Perlin.GenerateNoise(mapG.NoiseData, position); // generate height map for the terrain
 
             MeshFilter mf = meshObject.GetComponent<MeshFilter>();
             //use the height map to adjust the vertices of the mesh to match the height map's value
@@ -147,6 +147,30 @@ public class EndlessTerrain : MonoBehaviour
             return meshObject.activeSelf;
         }
     }
+    // This struct contains information for different levels of detail.
+    [System.Serializable]
+    public struct LODInfo
+    {
+        public int detailLevel;
+        public float viewDistance;
+    }
+
+    //class LODMesh
+    //{
+    //    public Mesh mesh;
+    //    public bool hasRequestedMesh;
+    //    public bool hasMesh;
+    //    int LOD;
+
+    //    public LODMesh(int LOD)
+    //    {
+    //        this.LOD = LOD;
+    //    }
+
+    //    public void RequestMesh(MapData mapData)
+    //    {
+    //        hasRequestedMesh = true;
+    //        MapGenerator.
+    //    }
+    //}
 }
-
-
