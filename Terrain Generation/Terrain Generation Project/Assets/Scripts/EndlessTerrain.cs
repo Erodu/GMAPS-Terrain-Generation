@@ -9,9 +9,7 @@ using System;
 
 public class EndlessTerrain : MonoBehaviour
 {
-    // Using struct LODInfo
-    public LODInfo[] levelsOfDetail;
-    public static float maxViewDistance;
+    public const float maxViewDistance = 300;
     public Transform player;
     public Transform meshGroup;
     public static Vector2 playerPosition;
@@ -31,11 +29,10 @@ public class EndlessTerrain : MonoBehaviour
     private void Start()
     {
         mat = material;
-        // Set the maximum view distance to the last element in levelsOfDetail's viewDistance.
-        maxViewDistance = levelsOfDetail[levelsOfDetail.Length - 1].viewDistance;
+
         //get the chunk's information
         chunkSize = mapGen.NoiseData.resolution - 1;
-        chunksVisibleInViewDistance = Mathf.RoundToInt(maxViewDistance / chunkSize);
+        chunksVisibleInViewDistance = Mathf.RoundToInt(maxViewDistance / chunkSize);     
     }
 
     private void Update()
@@ -150,32 +147,6 @@ public class EndlessTerrain : MonoBehaviour
             return meshObject.activeSelf;
         }
     }
-    // This struct contains information for different levels of detail.
-    [System.Serializable]
-    public struct LODInfo
-    {
-        public int detailLevel;
-        public float viewDistance;
-    }
-
-    //class LODMesh
-    //{
-    //    public Mesh mesh;
-    //    public bool hasRequestedMesh;
-    //    public bool hasMesh;
-    //    int LOD;
-
-    //    public LODMesh(int LOD)
-    //    {
-    //        this.LOD = LOD;
-    //    }
-
-    //    public void RequestMesh(MapData mapData)
-    //    {
-    //        hasRequestedMesh = true;
-    //        MapGenerator.
-    //    }
-    //}
 }
 
 

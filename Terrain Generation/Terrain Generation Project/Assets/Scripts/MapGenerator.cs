@@ -10,13 +10,13 @@ public class MapGenerator : MonoBehaviour
     public AnimationCurve aniCurve;
 
     public MeshFilter mf;
-    public EndlessTerrain endlessTerrain;
+
 
     public void GenerateMap()
     {
         float[,] heightMap = Noise.Perlin.GenerateNoise(NoiseData,new Vector2(0,0));
         Color[] colorMap = new Color[NoiseData.resolution * NoiseData.resolution];
-        
+
         DrawMesh(MeshManipulator.GenerateTerrainMesh(heightMap, heightMultiplier, aniCurve, LOD));
     }
 
