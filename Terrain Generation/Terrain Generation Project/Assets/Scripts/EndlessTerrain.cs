@@ -96,11 +96,12 @@ public class EndlessTerrain : MonoBehaviour
         Bounds bounds;
 
         LODInfo[] levelsOfDetail;
-
-
+        int LODCurrent;
+        MapGenerator mapG;
         public TerrainChunk(Vector2 coord, int size, Transform parent, MapGenerator mapG, LODInfo[] levelsOfDetail)
         {
             this.levelsOfDetail = levelsOfDetail;
+            this.mapG = mapG;
             position = coord * size;
             bounds = new(position, Vector2.one * size);
             Vector3 positionV3 = new(position.x, 0, position.y);
@@ -116,7 +117,7 @@ public class EndlessTerrain : MonoBehaviour
 
             MeshFilter mf = meshObject.GetComponent<MeshFilter>();
             //use the height map to adjust the vertices of the mesh to match the height map's value
-            MeshData meshData = MeshManipulator.GenerateTerrainMesh(heightMap, mapG.heightMultiplier, mapG.aniCurve, mapG.LOD, levelsOfDetail);
+            MeshData meshData = MeshManipulator.GenerateTerrainMesh(heightMap, mapG.heightMultiplier, mapG.aniCurve, levelsOfDetail[LODCurrent].detailLevel);
             //create the mesh and apply it to the object
             mf.sharedMesh = meshData.CreateMesh();
             //update the collider
@@ -129,16 +130,58 @@ public class EndlessTerrain : MonoBehaviour
             SetVisible(false);
         }
 
+        int CheckLOD()
+        {
+            float playerDistFromNearestEdge = Mathf.Sqrt(bounds.SqrDistance(playerPosition));
+            // Check if player's distance is greater than the view distance within LODInfo[].
+            // If so, return its corresponding detailLevel.
+            // Otherwise, we return the last level of detail in the array.
+            for (int i = 0; i < levelsOfDetail.Length; i++)
+            {
+                if (playerDistFromNearestEdge > levelsOfDetail[i].viewDistance)
+                {
+                    return i;
+                }
+            }
+            return levelsOfDetail.Length - 1;
+        }
+
         //find points on its perimeter clsoest to the player's position
         //find distance between that point and the player
         //and if distance < maxViewDistance, enable the mesh object
         //else it will be disabled
+
+        /// <summary>
+        /// Before doing all of that, we first check to see if we need to
+        /// update the level of detail on the map. If the new level of detail
+        /// does not match our current one, we update it appropriately. We can
+        /// check the new LOD with the CheckLOD() function.
+        /// </summary>
         public void UpdateTerrainChunk()
         {
+            int LODCheck = CheckLOD();
+            if (LODCheck != LODCurrent)
+            {
+                LODCurrent = LODCheck;
+                LODUpdate();
+            }
             float playerDistFromNearestEdge = Mathf.Sqrt(bounds.SqrDistance(playerPosition));
             bool visible = playerDistFromNearestEdge <= maxViewDistance;
             SetVisible(visible);
 
+        }
+
+        void LODUpdate()
+        {
+            float[,] heightMap = Noise.Perlin.GenerateNoise(mapG.NoiseData, position); // generate height map for the terrain
+
+            MeshFilter mf = meshObject.GetComponent<MeshFilter>();
+            //use the height map to adjust the vertices of the mesh to match the height map's value
+            MeshData meshData = MeshManipulator.GenerateTerrainMesh(heightMap, mapG.heightMultiplier, mapG.aniCurve, levelsOfDetail[LODCurrent].detailLevel);
+            //create the mesh and apply it to the object
+            mf.sharedMesh = meshData.CreateMesh();
+            //update the collider
+            meshObject.GetComponent<MeshCollider>().sharedMesh = mf.sharedMesh;
         }
 
         public void SetVisible(bool visible)
