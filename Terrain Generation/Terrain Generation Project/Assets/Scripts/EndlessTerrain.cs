@@ -82,7 +82,7 @@ public class EndlessTerrain : MonoBehaviour
                 else
                 {
                     //create a new instance of the chunk and add it into the dictionary
-                    terrainChunkDictionary.Add(viewedChunkCoord, new TerrainChunk(viewedChunkCoord, chunkSize, meshGroup, mapGen));
+                    terrainChunkDictionary.Add(viewedChunkCoord, new TerrainChunk(viewedChunkCoord, chunkSize, meshGroup, mapGen, levelsOfDetail));
                 }
             }
         }
@@ -95,8 +95,12 @@ public class EndlessTerrain : MonoBehaviour
         Vector2 position;
         Bounds bounds;
 
-        public TerrainChunk(Vector2 coord, int size, Transform parent, MapGenerator mapG)
+        LODInfo[] levelsOfDetail;
+
+
+        public TerrainChunk(Vector2 coord, int size, Transform parent, MapGenerator mapG, LODInfo[] levelsOfDetail)
         {
+            this.levelsOfDetail = levelsOfDetail;
             position = coord * size;
             bounds = new(position, Vector2.one * size);
             Vector3 positionV3 = new(position.x, 0, position.y);
@@ -112,7 +116,7 @@ public class EndlessTerrain : MonoBehaviour
 
             MeshFilter mf = meshObject.GetComponent<MeshFilter>();
             //use the height map to adjust the vertices of the mesh to match the height map's value
-            MeshData meshData = MeshManipulator.GenerateTerrainMesh(heightMap, mapG.heightMultiplier, mapG.aniCurve, mapG.LOD);
+            MeshData meshData = MeshManipulator.GenerateTerrainMesh(heightMap, mapG.heightMultiplier, mapG.aniCurve, mapG.LOD, levelsOfDetail);
             //create the mesh and apply it to the object
             mf.sharedMesh = meshData.CreateMesh();
             //update the collider
