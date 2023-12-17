@@ -171,6 +171,10 @@ public class EndlessTerrain : MonoBehaviour
 
         }
 
+        /// <summary>
+        /// We are generating the mesh once again, but with a different detail level.
+        /// This is all just taken from TerrainChunk.
+        /// </summary>
         void LODUpdate()
         {
             float[,] heightMap = Noise.Perlin.GenerateNoise(mapG.NoiseData, position); // generate height map for the terrain
