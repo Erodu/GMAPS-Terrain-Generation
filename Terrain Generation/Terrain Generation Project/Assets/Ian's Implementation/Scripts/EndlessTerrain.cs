@@ -133,7 +133,7 @@ public class EndlessTerrain : MonoBehaviour
         int CheckLOD()
         {
             float playerDistFromNearestEdge = Mathf.Sqrt(bounds.SqrDistance(playerPosition));
-            // Check if player's distance is greater than the view distance within LODInfo[].
+            // Check if player's distance is less than the view distance within LODInfo[].
             // If so, return its corresponding detailLevel.
             // Otherwise, we return the last level of detail in the array.
             for (int i = 0; i < levelsOfDetail.Length; i++)
@@ -205,23 +205,4 @@ public class EndlessTerrain : MonoBehaviour
         public int detailLevel;
         public float viewDistance;
     }
-
-    //class LODMesh
-    //{
-    //    public Mesh mesh;
-    //    public bool hasRequestedMesh;
-    //    public bool hasMesh;
-    //    int LOD;
-
-    //    public LODMesh(int LOD)
-    //    {
-    //        this.LOD = LOD;
-    //    }
-
-    //    public void RequestMesh(MapData mapData)
-    //    {
-    //        hasRequestedMesh = true;
-    //        MapGenerator.
-    //    }
-    //}
 }
