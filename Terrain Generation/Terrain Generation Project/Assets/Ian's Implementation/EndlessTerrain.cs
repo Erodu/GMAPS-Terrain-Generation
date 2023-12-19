@@ -202,6 +202,15 @@ public class EndlessTerrain : MonoBehaviour
     [System.Serializable]
     public struct LODInfo
     {
+        /// <summary>
+        /// Make detail levels increasing factors of 255
+        /// Set view distance to whatever you please
+        /// 
+        /// Standard is:
+        /// Element 0: detailLevel = 1, viewDistance = 100
+        /// Element 1: detailLevel = 5, viewDistance = 300
+        /// Element 2: detailLevel = 15, viewDistance = 900
+        /// </summary>
         public int detailLevel;
         public float viewDistance;
     }
