@@ -247,7 +247,7 @@ public static class Noise
                     //get a random vector based off the current sector
                     Vector2 randpoint = RandomVector2(sector,seed);
 
-                    //get the difference
+                    //subtract the vectors so we can get the magnitude which would be the distance
                     Vector2 diff = neighbour + randpoint - frac_pixel;
 
                     //distance between the pixel and the point checked
