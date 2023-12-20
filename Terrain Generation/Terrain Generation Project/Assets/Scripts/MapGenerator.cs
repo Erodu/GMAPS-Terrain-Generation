@@ -14,7 +14,24 @@ public class MapGenerator : MonoBehaviour
 
     public void GenerateMap()
     {
-        float[,] heightMap = Noise.Perlin.GenerateNoise(NoiseData,new Vector2(0,0));
+        float[,] heightMap;
+
+        //check the noise type and do the appropriate function
+        switch (NoiseData.noiseType)
+        {
+            case NoiseType.PERLIN:
+                heightMap = Noise.Perlin.GenerateNoise(NoiseData, new Vector2(0, 0));
+                break;
+
+            case NoiseType.WORLEY:
+                heightMap = Noise.Worley.GenerateNoise(NoiseData, new Vector2(0, 0));
+                break;
+
+            default:
+                heightMap = Noise.Perlin.GenerateNoise(NoiseData, new Vector2(0, 0));
+                break;
+        }
+
         Color[] colorMap = new Color[NoiseData.resolution * NoiseData.resolution];
 
         DrawMesh(MeshManipulator.GenerateTerrainMesh(heightMap, heightMultiplier, aniCurve, LOD));
