@@ -39,14 +39,13 @@ public static class MeshManipulator
                 }
 
                 vertexIndex++;
-
             }
         }
 
         return meshData;
     }
 
-
+    //dont think it is being used anymore
     //reduced stuff for testing
     public static MeshData GenerateTerrainMesh(int resolution, int levelOfDetail)
     {
@@ -80,6 +79,7 @@ public static class MeshManipulator
                 //check if on edge?
                 if (x < width - 1 && y < height - 1)
                 {
+                    //adds the trangle
                     meshData.AddTriangle(vertexIndex, vertexIndex + verticesPerLine + 1, vertexIndex + verticesPerLine);
                     meshData.AddTriangle(vertexIndex + verticesPerLine + 1, vertexIndex, vertexIndex + 1);
                 }
